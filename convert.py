@@ -34,9 +34,9 @@ def make_replacement(word, gender=None, num=None, case=None):
         'наше',
         'наши', 'наших', 'нашим', 'нашими'
     ]
-
+    
     if not (('VERB' in p[0].tag) or ('NOUN' in p[0].tag)):
-        if num == 'Sing':
+        if num == 'Sing' or num is None:
 
             # female pronouns
             if gender == 'Fem':
@@ -67,7 +67,7 @@ def make_replacement(word, gender=None, num=None, case=None):
                         print(word + ' not found')
 
         # plural pronouns
-        elif num == 'Plur':
+        elif num == 'Plur' or num is None:
             if word in genitive_plural:
                 new_word = 'их'
             else:
@@ -99,6 +99,36 @@ def make_replacement(word, gender=None, num=None, case=None):
     return new_word
 
 
+def name_to_gent(name, gender=None):
+    t_name = ''
+
+    if gender == 'Fem':
+        gender = 'femn'
+    elif gender == 'Masc':
+        gender = 'masc'
+    tokens = name.split(' ')
+
+    morph = pymorphy2.MorphAnalyzer()
+
+    for token in tokens:
+        p = morph.parse(token)
+        i = 0
+        while not gender in p[i].tag:
+            i += 1
+        p = p[i]
+        t_name += p.inflect({'gent'}).word + ' '
+    
+    new_name = t_name[0].upper()
+    for i in range(len(t_name)):
+        if t_name[i] == ' ' or t_name[i] == '-':
+            if i < len(t_name)-1:
+                new_name += t_name[i+1].upper()
+        else:
+            if i < len(t_name)-1:
+                new_name += t_name[i+1]
+
+    return new_name
+
+
 if __name__ == '__main__':
-    print(make_replacement('моя', gender='Fem', num='Sing'))
-    print(make_replacement('летаю'))
+    print(name_to_gent('Эдуард Кочергин', 'Masc'))
