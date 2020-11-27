@@ -184,29 +184,24 @@
             // and return a promise to indicate task completion.
             return context.sync().then(function () {
                 // Get the full text of the document (note that it is a single line - no \n characters
-                var text = body.text
+                var text = body.text;
 
-                // Remove all digits
-                var digitlessRow = text.replace(/[0-9]/g, '');
+                // Get the full name of the actor
+                var fullName = parseFullName(text);
 
-                // Get the list of words
-                var words = digitlessRow.match(/[\wа-я]+/ig);
-                var wordsLowerCase = words.map(x => x.toLowerCase())
+                // Get the message to be transformed and its index in the original text
+                var res = parseMessage(text);
+                var message = res[0];
+                var messageIdx = res[1];
 
-                // Get indices of middle name and date of birth in the word list. Full name is in between those words
-                var middleNameIdx = wordsLowerCase.indexOf('отчество');
-                var dateOfBirthIdx = wordsLowerCase.slice(middleNameIdx + 1).indexOf('дата') + (middleNameIdx + 1);
-
-                // Get the full name
-                var fullName = words.slice(middleNameIdx + 1, dateOfBirthIdx);
-
-                // Join all
-                fullName = fullName.join(' ');
-
-                Debug.writeln("DEBUG")
-                Debug.writeln(text)
-                Debug.writeln("FULLNAME")
-                Debug.writeln(fullName)
+                Debug.writeln("DEBUG");
+                Debug.writeln(text);
+                Debug.writeln("\nFULLNAME");
+                Debug.writeln(fullName);
+                Debug.writeln("\nMESSAGE");
+                Debug.writeln(message);
+                Debug.writeln('\nMESSAGE INDEX');
+                Debug.writeln(messageIdx);
             });
         })
             .catch(function (error) {
@@ -215,6 +210,40 @@
                     console.log('Debug info: ' + JSON.stringify(error.debugInfo));
                 }
             });
+    }
+
+    function parseFullName(text) {
+        // Remove all digits
+        var digitlessRow = text.replace(/[0-9]/g, '');
+
+        // Get the list of words
+        var words = digitlessRow.match(/[\wа-я]+/ig);
+        var wordsLowerCase = words.map(x => x.toLowerCase());
+
+        // Get indices of middle name and date of birth in the word list. Full name is in between those words
+        var middleNameIdx = wordsLowerCase.indexOf('отчество');
+        var dateOfBirthIdx = wordsLowerCase.slice(middleNameIdx + 1).indexOf('дата') + (middleNameIdx + 1);
+
+        // Get the full name
+        var fullName = words.slice(middleNameIdx + 1, dateOfBirthIdx);
+
+        // Join all
+        fullName = fullName.join(' ');
+
+        return fullName;
+    }
+
+    function parseMessage(text) {
+        // Consider message to be everything after this phrase
+        var token = 'Иные данные о личности';
+
+        // Get index of the second char after the token
+        var messageIdx = text.indexOf(token) + token.length + 1;
+
+        // Get the string after the token
+        var message = text.slice(messageIdx);
+
+        return [message, messageIdx];
     }
 
     function insertChineseProverbAtTheEnd() {
