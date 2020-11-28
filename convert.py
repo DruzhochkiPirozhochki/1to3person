@@ -1,8 +1,23 @@
 import pymorphy2
 
-def make_replacement(word, gender=None, num=None, case=None):
+case_mapping = {
+    "Nom": "nomn",
+    "Gen": "gent",
+    "Dat": "datv",
+    "Acc": "accs",
+    "Ins": "ablt",
+    "Loc": "loct"
+}
 
-    word = word.lower()
+
+def change_case(word, new_case):
+    morph = pymorphy2.MorphAnalyzer()
+    word = morph.parse(word)[0]
+    return word.inflect({case_mapping.get(new_case, "nomn")}).word
+
+
+def make_replacement(word, gender=None, num=None, case=None):
+    word = word.lower().strip()
     new_word = word
 
     morph = pymorphy2.MorphAnalyzer()
@@ -36,7 +51,7 @@ def make_replacement(word, gender=None, num=None, case=None):
     ]
 
     if not (('VERB' in p[0].tag) or ('NOUN' in p[0].tag)):
-        if num == 'Sing':
+        if num == 'Sing' or num is None:
 
             # female pronouns
             if gender == 'Fem':
@@ -67,7 +82,7 @@ def make_replacement(word, gender=None, num=None, case=None):
                         print(word + ' not found')
 
         # plural pronouns
-        elif num == 'Plur':
+        elif num == 'Plur' or num is None:
             if word in genitive_plural:
                 new_word = 'их'
             else:
@@ -101,4 +116,5 @@ def make_replacement(word, gender=None, num=None, case=None):
 
 if __name__ == '__main__':
     print(make_replacement('моя', gender='Fem', num='Sing'))
+    print(make_replacement('я', gender='Fem', num='Sing'))
     print(make_replacement('летаю'))
