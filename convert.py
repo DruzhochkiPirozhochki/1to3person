@@ -9,9 +9,10 @@ case_mapping = {
     "Loc": "loct"
 }
 
+morph = pymorphy2.MorphAnalyzer()
+
 
 def change_case(word, new_case):
-    morph = pymorphy2.MorphAnalyzer()
     word = morph.parse(word)[0]
     return word.inflect({case_mapping.get(new_case, "nomn")}).word
 
@@ -20,12 +21,13 @@ def make_replacement(word, gender=None, num=None, case=None):
     word = word.lower().strip()
     new_word = word
 
-    morph = pymorphy2.MorphAnalyzer()
     p = morph.parse(word)
 
-    personal_male = {'я': 'он', 'меня_р': 'его', 'мне_д': 'ему', 'меня_в': 'него', 'мной': 'им', 'мною': 'им', 'мне_п': 'нем'}
+    personal_male = {'я': 'он', 'меня_р': 'его', 'мне_д': 'ему', 'меня_в': 'него', 'мной': 'им', 'мною': 'им',
+                     'мне_п': 'нем'}
 
-    personal_female = {'я': 'она', 'меня_р': 'ее', 'мне_д': 'ей', 'меня_в': 'нее', 'мной': 'ей', 'мною': 'ее', 'мне_п': 'ней'}
+    personal_female = {'я': 'она', 'меня_р': 'ее', 'мне_д': 'ей', 'меня_в': 'нее', 'мной': 'ей', 'мною': 'ее',
+                       'мне_п': 'ней'}
 
     personal_plural = {'мы': 'они', 'нас': 'их', 'нам': 'им', 'нас_в': 'их', 'нами': 'ими', 'нас_п': 'них'}
 
@@ -49,7 +51,7 @@ def make_replacement(word, gender=None, num=None, case=None):
         'наше',
         'наши', 'наших', 'нашим', 'нашими'
     ]
-    
+
     if not (('VERB' in p[0].tag) or ('NOUN' in p[0].tag)):
         if num == 'Sing' or num is None:
 
@@ -136,15 +138,15 @@ def name_to_gent(name, gender=None):
             i += 1
         p = p[i]
         t_name += p.inflect({'gent'}).word + ' '
-    
+
     new_name = t_name[0].upper()
     for i in range(len(t_name)):
         if t_name[i] == ' ' or t_name[i] == '-':
-            if i < len(t_name)-1:
-                new_name += t_name[i+1].upper()
+            if i < len(t_name) - 1:
+                new_name += t_name[i + 1].upper()
         else:
-            if i < len(t_name)-1:
-                new_name += t_name[i+1]
+            if i < len(t_name) - 1:
+                new_name += t_name[i + 1]
 
     return new_name
 
