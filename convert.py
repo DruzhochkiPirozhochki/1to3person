@@ -31,21 +31,21 @@ def make_replacement(word, gender=None, num=None, case=None):
 
     personal_plural = {'мы': 'они', 'нас': 'их', 'нам': 'им', 'нас_в': 'их', 'нами': 'ими', 'нас_п': 'них'}
 
-    genitive_male = [
+    posessive_male = [
         'мой', 'моего', 'моему', 'моим', 'моем', 'моём',
         'моя', 'моей', 'мою',
         'моё', 'мое',
         'мои', 'моих', 'моим', 'моими'
     ]
 
-    genitive_female = [
+    posessive_female = [
         'мой', 'моего', 'моему', 'моим', 'моем', 'моём',
         'моя', 'моей', 'мою',
         'моё', 'мое',
         'мои', 'моих', 'моим', 'моими'
     ]
 
-    genitive_plural = [
+    posessive_plural = [
         'наш', 'нашего', 'нашему', 'нашим', 'нашем',
         'наша', 'нашей', 'нашу',
         'наше',
@@ -53,57 +53,62 @@ def make_replacement(word, gender=None, num=None, case=None):
     ]
 
     if not (('VERB' in p[0].tag) or ('NOUN' in p[0].tag)):
-        if num == 'Sing' or num is None:
 
+        # posessive pronouns
+        if word in posessive_female:
+            new_word = 'ее'
+            return new_word
+        elif word in posessive_male:
+            new_word = 'его'
+            return new_word
+        elif word in posessive_plural:
+            new_word = 'их'
+            return new_word
+        
+        if num == 'Sing' or num is None:
             # female pronouns
             if gender == 'Fem':
-                if word in genitive_female:
-                    new_word = 'ее'
-                else:
-                    if case == 'Dat':
-                        word = word + '_д'
-                    elif case == 'Acc':
-                        word = word + '_в'
-                    elif case == 'Loc':
-                        word = word + '_п'
-                    elif case == 'Gen':
-                        word = word + '_р'
-                    if word in personal_female:
-                        new_word = personal_female[word]
-                    else:
-                        print(word + ' not found')
-
-            # male pronouns
-            elif gender == 'Masc':
-                if word in genitive_male:
-                    new_word = 'его'
-                else:
-                    if case == 'Dat':
-                        word = word + '_д'
-                    elif case == 'Acc':
-                        word = word + '_в'
-                    elif case == 'Loc':
-                        word = word + '_п'
-                    elif case == 'Gen':
-                        word = word + '_р'
-                    if word in personal_male:
-                        new_word = personal_male[word]
-                    else:
-                        print(word + ' not found')
-
-        # plural pronouns
-        elif num == 'Plur' or num is None:
-            if word in genitive_plural:
-                new_word = 'их'
-            else:
-                if case == 'Ins':
+                if case == 'Dat':
+                    word = word + '_д'
+                elif case == 'Acc':
                     word = word + '_в'
                 elif case == 'Loc':
                     word = word + '_п'
-                if word in personal_plural:
-                    new_word = personal_plural[word]
+                elif case == 'Gen':
+                    word = word + '_р'
+                if word in personal_female:
+                    new_word = personal_female[word]
+                    return new_word
                 else:
                     print(word + ' not found')
+
+            # male pronouns
+            elif gender == 'Masc':
+                if case == 'Dat':
+                    word = word + '_д'
+                elif case == 'Acc':
+                    word = word + '_в'
+                elif case == 'Loc':
+                    word = word + '_п'
+                elif case == 'Gen':
+                    word = word + '_р'
+                if word in personal_male:
+                    new_word = personal_male[word]
+                    return new_word
+                else:
+                    print(word + ' not found')
+
+        # plural pronouns
+        elif num == 'Plur' or num is None:
+            if case == 'Ins':
+                word = word + '_в'
+            elif case == 'Loc':
+                word = word + '_п'
+            if word in personal_plural:
+                new_word = personal_plural[word]
+                return new_word
+            else:
+                print(word + ' not found')
 
     # verb detection
     else:
@@ -114,12 +119,15 @@ def make_replacement(word, gender=None, num=None, case=None):
                 new_word = p.inflect({'3per'}).word
         else:
             i = 0
+            max_idx = len(p)
             while not 'VERB' in p[i].tag:
-                i += 1
+                if i != max_idx:
+                    i += 1
             p = p[i]
-            print('word description: ', p)
-            if p.tag.person != None:
-                new_word = p.inflect({'3per'}).word
+            if 'VERB' in p[i].tag:
+                print('word description: ', p)
+                if p.tag.person != None:
+                    new_word = p.inflect({'3per'}).word
 
     return new_word
 
@@ -156,7 +164,6 @@ def name_to_gent(name, gender=None):
 
 
 if __name__ == '__main__':
-    print(make_replacement('моя', gender='Fem', num='Sing'))
+    print(make_replacement('мои', num='Plur'))
     print(make_replacement('я', gender='Fem', num='Sing'))
     print(make_replacement('летаю'))
-    print(name_to_gent('Эдуард Кочергин', 'Masc'))
