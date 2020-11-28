@@ -1,1 +1,2 @@
 pymorphy2
+natasha
