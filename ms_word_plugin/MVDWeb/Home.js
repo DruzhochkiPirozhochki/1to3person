@@ -194,7 +194,7 @@
                 var message = res[0];
                 var messageIdx = res[1];
 
-                Debug.writeln("DEBUG");
+                Debug.writeln("\nDEBUG");
                 Debug.writeln(text);
                 Debug.writeln("\nFULLNAME");
                 Debug.writeln(fullName);
@@ -202,6 +202,13 @@
                 Debug.writeln(message);
                 Debug.writeln('\nMESSAGE INDEX');
                 Debug.writeln(messageIdx);
+
+                transformText(fullName, message).then(res => {
+                    Debug.writeln("\nTRANSFORMED TEXT");
+                    Debug.writeln(res);
+                });
+
+                
             });
         })
             .catch(function (error) {
@@ -235,7 +242,7 @@
 
     function parseMessage(text) {
         // Consider message to be everything after this phrase
-        var token = 'Иные данные о личности';
+        const token = 'Иные данные о личности';
 
         // Get index of the second char after the token
         var messageIdx = text.indexOf(token) + token.length + 1;
@@ -244,6 +251,44 @@
         var message = text.slice(messageIdx);
 
         return [message, messageIdx];
+    }
+
+    /* Send POST request to the server to obtain the transformed version of the text */
+    async function transformText(fullName, message) {
+        // Parameters of the POST request
+        const params = {
+            'fname': fullName,
+            'text': message
+        };
+
+        // Address of the server
+        const url = 'http://localhost:8080/send';
+
+        // Send POST request
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(params)
+            });
+
+            // Get the transformed text
+            var result = await response.json();
+
+            Debug.writeln('\nRESPONSE');
+            Debug.writeln(response);
+            Debug.writeln('\nRESULT');
+            Debug.writeln(result);
+
+            return result['text'];
+
+        } catch (e) {
+            Debug.writeln('\nERROR');
+            Debug.writeln(e);
+        }
     }
 
     function insertChineseProverbAtTheEnd() {

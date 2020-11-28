@@ -1,6 +1,12 @@
 from flask import Flask, request, jsonify
 
-server = Flask(__name__);
+#from transform import transform_text
+from flask_cors import CORS
+
+server = Flask(__name__)
+cors = CORS(server)
+server.config['CORS_HEADERS'] = 'Content-Type'
+
 
 @server.route('/send', methods=['POST'])
 def send():
@@ -12,7 +18,7 @@ def send():
     print(f"fname = {fname}\ntext = {text}")
 
     # updating the text
-    text += "\n\nTHIS TEXT WAS UPDATED"
+    text = f"{transform_text(text, 'Masc', fname)}"
 
     # sending back updated text
     return jsonify({'text': text})
