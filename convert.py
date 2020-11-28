@@ -1,8 +1,23 @@
 import pymorphy2
 
-def make_replacement(word, gender=None, num=None, case=None):
+case_mapping = {
+    "Nom": "nomn",
+    "Gen": "gent",
+    "Dat": "datv",
+    "Acc": "accs",
+    "Ins": "ablt",
+    "Loc": "loct"
+}
 
-    word = word.lower()
+
+def change_case(word, new_case):
+    morph = pymorphy2.MorphAnalyzer()
+    word = morph.parse(word)[0]
+    return word.inflect({case_mapping.get(new_case, "nomn")}).word
+
+
+def make_replacement(word, gender=None, num=None, case=None):
+    word = word.lower().strip()
     new_word = word
 
     morph = pymorphy2.MorphAnalyzer()
@@ -135,4 +150,7 @@ def name_to_gent(name, gender=None):
 
 
 if __name__ == '__main__':
+    print(make_replacement('моя', gender='Fem', num='Sing'))
+    print(make_replacement('я', gender='Fem', num='Sing'))
+    print(make_replacement('летаю'))
     print(name_to_gent('Эдуард Кочергин', 'Masc'))
