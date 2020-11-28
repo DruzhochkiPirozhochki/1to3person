@@ -64,6 +64,8 @@ def make_replacement(word, gender=None, num=None, case=None):
                         word = word + '_в'
                     elif case == 'Loc':
                         word = word + '_п'
+                    elif case == 'Gen':
+                        word = word + '_р'
                     if word in personal_female:
                         new_word = personal_female[word]
                     else:
@@ -80,6 +82,8 @@ def make_replacement(word, gender=None, num=None, case=None):
                         word = word + '_в'
                     elif case == 'Loc':
                         word = word + '_п'
+                    elif case == 'Gen':
+                        word = word + '_р'
                     if word in personal_male:
                         new_word = personal_male[word]
                     else:
