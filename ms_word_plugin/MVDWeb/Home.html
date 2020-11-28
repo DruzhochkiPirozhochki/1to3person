@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>Word Add-In with Commands Sample</title>
+
+    <script src="Scripts/jquery-3.5.0.js" type="text/javascript"></script>
+    <script src="Scripts/MessageBanner.js" type="text/javascript"></script>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+
+    <!-- Для включения автономной отладки с помощью локальной ссылки на скрипт Office.js используйте:  -->
+     <!--<script src="Scripts/Office/MicrosoftAjax.js" type="text/javascript"></script>  
+     <script src="Scripts/Office/1/office.js" type="text/javascript"></script> --> 
+
+    <script src="Home.js" type="text/javascript"></script>
+    <link href="Home.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/Button.css" rel="stylesheet" type="text/css" />
+    <link href="../Content/MessageBanner.css" rel="stylesheet" type="text/css" />
+
+
+    <!-- Дополнительные сведения о пакете Office UI Fabric Core см. по адресу https://aka.ms/office-ui-fabric. -->
+    <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/9.6.0/css/fabric.min.css">
+
+    <!-- Чтобы включить автономное использование Office UI Fabric Core, используйте следующее: -->
+     <!--link rel="stylesheet" href="Content/fabric.min.css"-->
+</head>
+
+    <!-- Office UI Fabric JS и его компоненты более не поддерживаются. Рекомендуемые шаблоны и методики см. по адресу https://aka.ms/PnP-OfficeFabricReact -->
+    <!-- <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/2.1.0/fabric.components.min.css"> -->
+
+<!--<body class="ms-Fabric" dir="ltr">
+    <div id="content-main">
+        <div class="padding">
+            <br />
+            <p class="ms-font-xxl ms-fontColor-neutralSecondary ms-fontWeight-semilight">Пример</p>
+            <br /><br />
+            <div class="ms-font-xl ms-fontColor-neutralTertiary">Выделите какой-нибудь текст</div>
+            <p class="ms-font-m-plus ms-fontColor-neutralTertiary" id="template-description"></p>
+            <div class="ms-font-m"><a target="_blank" class="ms-Link ms-Link--hero" href="https://go.microsoft.com/fwlink/?LinkId=276812">Поиск других примеров в Интернете...</a></div>
+            <br /><br />
+
+            <button class="Button Button--primary" id="highlight-button">
+                <span class="Button-icon"><i class="ms-Icon ms-Icon--plus"></i></span>
+                <span class="Button-label" id="button-text"></span>
+                <span class="Button-description" id="button-desc"></span>
+            </button>
+        </div>
+    </div>
+    <div class="footer">
+        <div class="ms-Grid ms-bgColor-themeSecondary">
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12"> <div class="ms-font-xl ms-fontColor-white">Contoso</div></div>
+            </div>
+        </div>
+    </div>-->
+
+    <!-- Компонент, используемый для отображения уведомлений -->
+    <!--<div class="MessageBanner" id="notification-popup">
+        <div class="MessageBanner-content">
+            <div class="MessageBanner-text">
+                <div class="MessageBanner-clipper">
+                    <div class="ms-font-m-plus ms-fontWeight-semibold" id="notification-header"></div>
+                    <div class="ms-font-m ms-fontWeight-semilight" id="notification-body"></div>
+                </div>
+            </div>
+            <button class="MessageBanner-expand" style="display:none"><i class="ms-Icon ms-Icon--chevronsDown"></i> </button>
+            <div class="MessageBanner-action"></div>
+        </div>
+        <button class="MessageBanner-close"> <i class="ms-Icon ms-Icon--ChromeClose"></i> </button>
+    </div>
+</body>-->
+<body class="ms-Fabric">
+    <div id="content-header">
+        <div class="padding">
+            <h1>МВД</h1>
+        </div>
+    </div>
+    <div id="content-main">
+        <div class="padding">
+            <p class="ms-font-xxl ms-fontColor-neutralSecondary ms-fontWeight-semilight">Выделите текст, который хотите преобразовать.</p>
+            <button class="Button Button--primary Button--white" id="checkhov">Преобразовать</button>
+        </div>
+    </div>
+    <br />
+    <div id="supportedVersion" />
+    <div class="footer">
+        <div class="ms-Grid ms-bgColor-themeSecondary">
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-lg12">
+                    <div class="ms-font-xl ms-fontColor-white"> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
