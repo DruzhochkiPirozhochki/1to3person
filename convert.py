@@ -64,7 +64,7 @@ def make_replacement(word, gender=None, num=None, case=None):
         elif word in posessive_plural:
             new_word = 'их'
             return new_word
-        
+
         if num == 'Sing' or num is None:
             # female pronouns
             if gender == 'Fem':
@@ -132,8 +132,9 @@ def make_replacement(word, gender=None, num=None, case=None):
     return new_word
 
 
-def name_to_gent(name, gender=None):
+def name_to_case(name, gender=None, case='Gen'):
     t_name = ''
+    case = case_mapping.get(case, "gent")
 
     if gender == 'Fem':
         gender = 'femn'
@@ -149,7 +150,7 @@ def name_to_gent(name, gender=None):
         while not gender in p[i].tag:
             i += 1
         p = p[i]
-        t_name += p.inflect({'gent'}).word + ' '
+        t_name += p.inflect({case}).word + ' '
 
     new_name = t_name[0].upper()
     for i in range(len(t_name)):
