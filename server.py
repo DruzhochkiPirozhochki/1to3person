@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 
-#from transform import transform_text
+from transform import transform_text
 from flask_cors import CORS
 
 server = Flask(__name__)
