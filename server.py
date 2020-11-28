@@ -1,16 +1,20 @@
 from flask import Flask, request, jsonify
 
 from transform import transform_text
+from flask_cors import CORS
 
-server = Flask(__name__);
+server = Flask(__name__)
+cors = CORS(server)
+server.config['CORS_HEADERS'] = 'Content-Type'
+
 
 @server.route('/send', methods=['POST'])
 def send():
     print("POST /send request")
 
     # obtaining passed args
-    fname = request.json['fname']
-    text = request.json['text']
+    fname = request.args['fname']
+    text = request.args['text']
     print(f"fname = {fname}\ntext = {text}")
 
     # updating the text

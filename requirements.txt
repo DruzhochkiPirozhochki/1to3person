@@ -1,2 +1,3 @@
 pymorphy2
 natasha
+flask_cors

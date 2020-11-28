@@ -163,7 +163,7 @@ def transform_text(text, gender, narrator):
                                          transformed[token.stop + global_offset:]])
             global_offset += len(new_word) - len(token.text)
 
-    doc.syntax.print()
+    # doc.syntax.print()
 
     print()
     print(*doc.tokens, sep="\n")
