@@ -14,11 +14,11 @@
 
   <!--Версия. Обновления из Магазина активируются, только если изменяется версия. -->
   <Version>1.0.0.0</Version>
-  <ProviderName>[Имя поставщика]</ProviderName>
+  <ProviderName>МВД</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <!-- Отображаемое имя надстройки. Используется в Магазине и различных местах пользовательского интерфейса Office, например в диалоговом окне надстройки. -->
-  <DisplayName DefaultValue="My Office Add-in" />
-  <Description DefaultValue="A task pane add-in for Word"/>
+  <DisplayName DefaultValue="МВД Плагин" />
+  <Description DefaultValue="МВД Плагин для Microsoft Word"/>
   <!-- Значок надстройки. Используется на экранах установки и диалоговых окнах надстроек. -->
   <IconUrl DefaultValue="~remoteAppUrl/Images/Button32x32.png" />
 

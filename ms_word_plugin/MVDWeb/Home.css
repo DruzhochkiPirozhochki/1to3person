@@ -19,23 +19,8 @@ body {
     padding: 15px;
 }
 
-#notification-popup.MessageBanner {
-    position: absolute;
-    left: 0px;
-    bottom: 0px;
-    text-align: left;
-    height: inherit;
-    min-width: inherit;
-}
-
-#notification-popup .MessageBanner-text {
-    margin: 0;
-    padding: 18px 15px;
-    min-width: inherit;
-}
-
 #content-header {
-    background: #2a8dd4;
+    background: #2b579a;
     color: #fff;
     position: absolute;
     top: 0;
@@ -53,4 +38,9 @@ body {
     right: 0;
     bottom: 0;
     overflow: auto;
+}
+
+.Button--white {
+    color: #fff !important;
+    background-color: #2b579a !important;
 }
