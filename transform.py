@@ -14,7 +14,7 @@ from natasha import (
 from copy import copy, deepcopy
 from types import SimpleNamespace
 from const import DETPRON, SELFDETERMINERS, MYDETERMINERS, QUOTES
-from convert import make_replacement, change_case
+from convert import make_replacement, change_case, name_to_case
 from gender_identification import identify_gender
 
 emb = NewsEmbedding()
@@ -112,7 +112,9 @@ def find_ambiguous_pronouns(gender, doc, narrator):
                 elif token.pos == "DET" and token.text.lower().strip() in DETPRON[gender][step]:
                     obj = token.head_id.split("_")
                     obj_token = doc.sents[int(obj[0]) - 1].tokens[int(obj[1]) - 1]
-                    to_change[token.id] = (obj_token.stop, obj_token.stop, f"{change_case(span.text, 'Gen')}")
+                    to_change[token.id] = (
+                        obj_token.stop, obj_token.stop, f"{name_to_case(span.text, gender=gender, case='Gen').strip()}",
+                        obj_token.id)
                     spans[spani:spani] = [SimpleNamespace(text=span.text)]
                     break
     return to_change
@@ -172,14 +174,33 @@ def transform_text(text, narrator):
                         [transformed[:token.start + sum(offsets[:i])], transformed[token.stop + sum(offsets[:i]):]])
                     global_offset += len(new_determiner) - len(token.text)
                     offsets[i] += len(new_determiner) - len(token.text)
+                else:
+                    new_determiner = MYDETERMINERS[token.text.lower()]
+                    transformed = new_determiner.join(
+                        [transformed[:token.start + sum(offsets[:i])], transformed[token.stop + sum(offsets[:i]):]])
+                    global_offset += len(new_determiner) - len(token.text)
+                    offsets[i] += len(new_determiner) - len(token.text)
                 continue
 
         if token.id in ambiguous:
             ambiguous_replace = ambiguous[token.id]
             if ambiguous_replace[0] == ambiguous_replace[1]:
+                transformed = "".join(
+                    [transformed[:token.start + sum(offsets[:i])], transformed[token.stop + sum(offsets[:i]):]])
+                offsets[doc.tokens.index(token)] -= len(token.text)
+
+                sent, num = map(lambda x: int(x) - 1, ambiguous_replace[3].split('_'))
+                another_token = doc.sents[sent].tokens[num]
+
+                ind = doc.tokens.index(another_token)
+                print(transformed)
+                print([transformed[:another_token.stop + sum(offsets[:ind])]])
+                print([transformed[another_token.stop + sum(offsets[:ind]) + 1:]])
+                transformed = (" " + ambiguous_replace[2]).join([transformed[:another_token.stop + sum(offsets[:ind])],
+                                                                 transformed[
+                                                                 another_token.stop + sum(offsets[:ind]):]])
+                offsets[ind] += len(ambiguous_replace[2]) + 1
                 continue
-                # transformed = "".join([transformed[token.start + global_offset:], transformed[:token.stop + global_offset]])
-                # global_offset -= len(token.text)
             transformed = ambiguous_replace[2].join(
                 [transformed[:ambiguous_replace[0] + sum(offsets[:i])],
                  transformed[ambiguous_replace[1] + sum(offsets[:i]):]])
@@ -206,16 +227,17 @@ def transform_text(text, narrator):
     return transformed
 
 
-# todo: fix переносы
+# todo: fix переносы ???
 # todo: fix гендер DONE
 # todo: fix заглавные буквы DONE
-# todo: fix кавычки и цитаты
+# todo: fix кавычки и цитаты DONE
 
 if __name__ == '__main__':
     # print(transform_text("Алексей встретил своего деда дома, а я люблю моего", "Masc", "Артем Баханов"))
     # print(make_replacement("я", "Fem", None, "Nom"))
     print(transform_text(
-        "Я сидела за столом. Илья играл на гитаре. Маша сидела на его диване. Я сидела на ее очень красивом и прекрасном стуле, а потом посидела на моем. Она лежала и делала работу. Она потом ушла, а он остался.", "Александра Крапива"))
+        "Я сидела за столом. Илья играл на гитаре. Маша сидела на его диване. Я сидела на ее очень красивом и прекрасном стуле, а потом посидела на моем. Она лежала и делала работу. Она потом ушла, а он остался.",
+        "Александра Крапива"))
 
     # print(transform_text(
     #     "Я с Алиной Бадюк сидела на кухне в Калининграде и разговаривали. Он работал. Через два часа я ушла домой. Она оставалась на кухне."))
