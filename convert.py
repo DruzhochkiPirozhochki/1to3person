@@ -8,9 +8,9 @@ def make_replacement(word, gender=None, num=None, case=None):
     morph = pymorphy2.MorphAnalyzer()
     p = morph.parse(word)
 
-    personal_male = {'я': 'он', 'меня': 'его', 'мне_д': 'ему', 'мной': 'им', 'мною': 'им', 'мне_п': 'нем'}
+    personal_male = {'я': 'он', 'меня_р': 'его', 'мне_д': 'ему', 'меня_в': 'него', 'мной': 'им', 'мною': 'им', 'мне_п': 'нем'}
 
-    personal_female = {'я': 'она', 'меня': 'ее', 'мне_д': 'ей', 'мной': 'ей', 'мною': 'ее', 'мне_п': 'ней'}
+    personal_female = {'я': 'она', 'меня_р': 'ее', 'мне_д': 'ей', 'меня_в': 'нее', 'мной': 'ей', 'мною': 'ее', 'мне_п': 'ней'}
 
     personal_plural = {'мы': 'они', 'нас': 'их', 'нам': 'им', 'нас_в': 'их', 'нами': 'ими', 'нас_п': 'них'}
 
@@ -43,8 +43,10 @@ def make_replacement(word, gender=None, num=None, case=None):
                 if word in genitive_female:
                     new_word = 'ее'
                 else:
-                    if case == 'Acc':
+                    if case == 'Dat':
                         word = word + '_д'
+                    elif case == 'Acc':
+                        word = word + '_в'
                     elif case == 'Loc':
                         word = word + '_п'
                     if word in personal_female:
@@ -57,8 +59,10 @@ def make_replacement(word, gender=None, num=None, case=None):
                 if word in genitive_male:
                     new_word = 'его'
                 else:
-                    if case == 'Acc':
+                    if case == 'Dat':
                         word = word + '_д'
+                    elif case == 'Acc':
+                        word = word + '_в'
                     elif case == 'Loc':
                         word = word + '_п'
                     if word in personal_male:
