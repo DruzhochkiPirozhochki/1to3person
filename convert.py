@@ -119,12 +119,14 @@ def make_replacement(word, gender=None, num=None, case=None):
                 new_word = p.inflect({'3per'}).word
         else:
             i = 0
-            max_idx = len(p)
+            max_idx = len(p) - 1
             while not 'VERB' in p[i].tag:
                 if i != max_idx:
                     i += 1
+                else:
+                    break
             p = p[i]
-            if 'VERB' in p[i].tag:
+            if 'VERB' in p.tag:
                 print('word description: ', p)
                 if p.tag.person != None:
                     new_word = p.inflect({'3per'}).word

@@ -13,12 +13,12 @@ def send():
     print("POST /send request")
 
     # obtaining passed args
-    fname = request.args['fname']
-    text = request.args['text']
+    fname = request.json['fname']
+    text = request.json['text']
     print(f"fname = {fname}\ntext = {text}")
 
     # updating the text
-    text = f"{transform_text(text, 'Masc', fname)}"
+    text = f"{transform_text(text, fname)}"
 
     # sending back updated text
     return jsonify({'text': text})
