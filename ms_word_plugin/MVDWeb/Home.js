@@ -9,7 +9,7 @@
             // Use this to check whether the API is supported in the Word client.
             if (Office.context.requirements.isSetSupported('WordApi', '1.1')) {
                 // Do something that is only available via the new APIs
-                $('#checkhov').click(insertChekhovQuoteAtTheBeginning);
+                $('#transform').click(insertChekhovQuoteAtTheBeginning);
                 $('#supportedVersion').html('This code is using Word 2016 or later.');
             }
             else {
@@ -38,33 +38,8 @@
                 // Get the full name of the actor
                 var fullName = parseFullName(text);
 
-                // Get the message to be transformed and its index in the original text
-                /*var res = parseMessage(text);
-                var message = res[0];
-                var messageIdx = res[1];*/
-                var res = parseHighlightedMessage(context.document, text);
-                var message = res[0];
-                var messageStartIdx = res[1];
-                var messageEndIdx = res[2];
-
-                Debug.writeln("\nDEBUG");
-                Debug.writeln(text);
-                Debug.writeln("\nFULLNAME");
-                Debug.writeln(fullName);
-                Debug.writeln("\nMESSAGE");
-                Debug.writeln(message);
-                Debug.writeln('\nMESSAGE INDEX');
-                //Debug.writeln(messageIdx);
-                Debug.writeln(messageStartIdx + ':::' + messageEndIdx);
-
-                transformText(fullName, message).then(res => {
-                    Debug.writeln("\nTRANSFORMED TEXT");
-                    Debug.writeln(res);
-
-                    replaceText(res);
-                });
-
-                
+                // Get highlighted text
+                getHighlightedText(fullName, text);                
             });
         })
             .catch(function (error) {
@@ -111,36 +86,58 @@
         return [message, messageIdx];
     }
 
-    function parseHighlightedMessage(document, text) {
-        var highlightedMessage = 'NOPE';
+    function parseHighlightedMessage(text, highlightedText) {
+        if (highlightedText !== null && highlightedText !== undefined) {
+            // Get the start and end position of the highlighted text
+            var startIdx = text.indexOf(highlightedText);
+            var endIdx = startIdx + highlightedText.length;
 
-        if (highlightedText !== null) {
-            highlightedMessage = highlightedText;
+            return [highlightedText, startIdx, endIdx];   
+        } else {
+            return ['', -1, -1];
         }
-
-        // Get the start and end position of the highlighted text
-        var startIdx = text.indexOf(highlightedMessage);
-        var endIdx = startIdx + highlightedMessage.length;
-
-        return [highlightedMessage, startIdx, endIdx];
     }
 
 
-    var highlightedText;
-
     // Get highlighted text
-    Office.onReady(function () {
-        $(document).ready(function () {
-            Office.context.document.getSelectedDataAsync(Office.CoercionType.Text, function (asyncResult) {
-                if (asyncResult.status == Office.AsyncResultStatus.Failed) {
-                    Debug.writeln('Action failed. Error: ' + asyncResult.error.message);
-                }
-                else {
-                    highlightedText = asyncResult.value;
-                }
+    function getHighlightedText(fullName, text) {
+        Office.onReady(function () {
+            $(document).ready(function () {
+                Office.context.document.getSelectedDataAsync(Office.CoercionType.Text, function (asyncResult) {
+                    if (asyncResult.status == Office.AsyncResultStatus.Failed) {
+                        Debug.writeln('Action failed. Error: ' + asyncResult.error.message);
+                    }
+                    else {
+                        Debug.writeln('HIGHLIGHTED');
+                        Debug.writeln(asyncResult.value);
+                        var highlightedText = asyncResult.value;
+
+                        var tmp = parseHighlightedMessage(text, highlightedText);
+                        var message = tmp[0];
+                        var messageStartIdx = tmp[1];
+                        var messageEndIdx = tmp[2];
+
+                        Debug.writeln("\nDEBUG");
+                        Debug.writeln(text);
+                        Debug.writeln("\nFULLNAME");
+                        Debug.writeln(fullName);
+                        Debug.writeln("\nMESSAGE");
+                        Debug.writeln(message);
+                        Debug.writeln('\nMESSAGE INDEX');
+                        Debug.writeln(messageStartIdx + ':::' + messageEndIdx);
+
+                        // Transform message and replace it with the result from server
+                        transformText(fullName, message).then(res => {
+                            Debug.writeln("\nTRANSFORMED TEXT");
+                            Debug.writeln(res);
+
+                            replaceText(res);
+                        });
+                    }
+                });
             });
         });
-    });
+    }
 
     /* Send POST request to the server to obtain the transformed version of the text */
     async function transformText(fullName, message) {
