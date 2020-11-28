@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 
+from transform import transform_text
+
 server = Flask(__name__);
 
 @server.route('/send', methods=['POST'])
@@ -12,7 +14,7 @@ def send():
     print(f"fname = {fname}\ntext = {text}")
 
     # updating the text
-    text += "\n\nTHIS TEXT WAS UPDATED"
+    text = f"{transform_text(text, 'Masc', fname)}"
 
     # sending back updated text
     return jsonify({'text': text})
