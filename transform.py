@@ -113,7 +113,8 @@ def transform_text(text, gender, narrator):
     ambiguous = find_ambiguous_pronouns(gender, doc, narrator)
     print(ambiguous)
     global_offset = 0
-    for token in doc.tokens:
+    offsets = [0] * len(doc.tokens)
+    for i, token in enumerate(doc.tokens):
         new_word = None
         if token.pos == "VERB" or token.pos == "PRON" and token.feats.get("Person") == '1':
             new_word = make_replacement(token.text, gender,
@@ -126,24 +127,29 @@ def transform_text(text, gender, narrator):
                 sentence = int(token.id.split("_")[0]) - 1
                 head = int(token.head_id.split("_")[1]) - 1
                 curid = int(token.id.split("_")[1]) - 1
-                if curid - head > 3:  # some threshold
+                if curid - head > 3:  # some threshold; if there is a determiner after the object
                     word2insert = doc.sents[sentence - 1].tokens[head]
                     word2insert = change_case(word2insert.text, token.feats.get("Case", None))
                     print(f"you need to insert {word2insert} after {token.text}")
 
                     new_determiner = MYDETERMINERS[token.text.lower()]
                     transformed = new_determiner.join(
-                        [transformed[:token.start + global_offset], transformed[token.stop + global_offset:]])
-                    global_offset += len(new_determiner) - len(token.text)
+                        [transformed[:token.start + sum(offsets[:i])], transformed[token.stop + sum(offsets[:i]):]])
 
-                    transformed = word2insert.join([transformed[:token.stop + 1 + global_offset] + " ",
-                                                    transformed[token.stop + 1 + global_offset:]])
-                    global_offset += len(word2insert) + 1
-                elif curid - head < 0:
-                    new_determiner = make_replacement(token.text, gender, token.feats.get("Number", None), token.feats.get("Case", None))
-                    transformed = new_determiner.join(
-                        [transformed[:token.start + global_offset], transformed[token.stop + global_offset:]])
                     global_offset += len(new_determiner) - len(token.text)
+                    offsets[i] += len(new_determiner) - len(token.text)
+
+                    transformed = word2insert.join([transformed[:token.stop + 1 + sum(offsets[:i + 1])] + " ",
+                                                    transformed[token.stop + 1 + sum(offsets[:i + 1]):]])
+                    global_offset += len(word2insert) + 1
+                    offsets[i] += len(word2insert) + 1
+                elif curid - head < 0:
+                    new_determiner = make_replacement(token.text, gender, token.feats.get("Number", None),
+                                                      token.feats.get("Case", None))
+                    transformed = new_determiner.join(
+                        [transformed[:token.start + sum(offsets[:i])], transformed[token.stop + sum(offsets[:i]):]])
+                    global_offset += len(new_determiner) - len(token.text)
+                    offsets[i] += len(new_determiner) - len(token.text)
                 continue
 
         if token.id in ambiguous:
@@ -153,22 +159,34 @@ def transform_text(text, gender, narrator):
                 # transformed = "".join([transformed[token.start + global_offset:], transformed[:token.stop + global_offset]])
                 # global_offset -= len(token.text)
             transformed = ambiguous_replace[2].join(
-                [transformed[:ambiguous_replace[0] + global_offset],
-                 transformed[ambiguous_replace[1] + global_offset:]])
+                [transformed[:ambiguous_replace[0] + sum(offsets[:i])],
+                 transformed[ambiguous_replace[1] + sum(offsets[:i]):]])
             global_offset += len(ambiguous_replace[2]) - len(token.text)
+            offsets[i] += len(ambiguous_replace[2]) - len(token.text)
             continue
 
         if new_word is not None:
-            transformed = new_word.join([transformed[:token.start + global_offset],
-                                         transformed[token.stop + global_offset:]])
+            transformed = new_word.join([transformed[:token.start + sum(offsets[:i])],
+                                         transformed[token.stop + sum(offsets[:i]):]])
             global_offset += len(new_word) - len(token.text)
+            offsets[i] += len(new_word) - len(token.text)
 
-    # doc.syntax.print()
+            # doc.syntax.print()
+
+    # capitalize all the first letters in each sentence
+    for sent in doc.sents:
+        offset = sum(offsets[:doc.tokens.index(sent.tokens[0])])
+        transformed = transformed[sent.start + offset].upper().join(
+            [transformed[:sent.start + offset], transformed[sent.start + offset + 1:]])
 
     print()
     print(*doc.tokens, sep="\n")
     return transformed
 
+
+# todo: fix переносы
+# todo: fix гендер
+# todo: fix заглавные буквы done
 
 if __name__ == '__main__':
     # print(transform_text("Алексей встретил своего деда дома, а я люблю моего", "Masc", "Артем Баханов"))
