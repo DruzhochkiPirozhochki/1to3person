@@ -124,6 +124,10 @@ def transform_text(text, narrator):
     :param narrator: the name of the narrator
     :return:
     """
+    narrator = narrator.strip()
+    if narrator == "":
+        narrator = "Рассказчик"
+
     transformed = copy(text)
     doc = Doc(text)
     doc.segment(segmenter)
