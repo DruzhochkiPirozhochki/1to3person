@@ -237,7 +237,7 @@ def transform_text(text, narrator):
     print(*doc.tokens, sep="\n")
     for change in changes:
         print(change, transformed[change[0]:change[1]])
-    return transformed
+    return transformed, changes
 
 
 # todo: fix переносы ???

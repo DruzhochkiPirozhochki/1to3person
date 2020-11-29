@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 from transform import transform_text
-from flask_cors import CORS
 
 server = Flask(__name__)
 cors = CORS(server)
@@ -18,10 +18,10 @@ def send():
     print(f"fname = {fname}\ntext = {text}")
 
     # updating the text
-    text = f"{transform_text(text, fname)}"
+    text, changes = transform_text(text, fname)
 
     # sending back updated text
-    return jsonify({'text': text})
+    return jsonify({'text': text, "colored": changes})
 
 
 if (__name__ == '__main__'):
