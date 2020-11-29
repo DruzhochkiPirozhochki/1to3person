@@ -177,7 +177,8 @@ def name_to_case(name, gender=None, case='Gen'):
             else:
                 break
         p = p[i]
-        t_name += p.inflect({case}).word + ' '
+        if p is not None:
+            t_name += p.inflect({case}).word + ' ' # todo: wtf
 
     new_name = t_name[0].upper()
     for i in range(len(t_name)):
