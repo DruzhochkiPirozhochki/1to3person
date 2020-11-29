@@ -135,7 +135,7 @@ def make_replacement(word, gender=None, num=None, case=None):
     else:
         if 'VERB' in p[0].tag:
             p = p[0]
-            print('word description: ', p)
+            # print('word description: ', p)
             if p.tag.person != None:
                 new_word = p.inflect({'3per'}).word
         else:
@@ -148,7 +148,7 @@ def make_replacement(word, gender=None, num=None, case=None):
                     break
             p = p[i]
             if 'VERB' in p.tag:
-                print('word description: ', p)
+                # print('word description: ', p)
                 if p.tag.person != None:
                     new_word = p.inflect({'3per'}).word
 
