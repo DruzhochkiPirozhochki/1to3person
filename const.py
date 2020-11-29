@@ -1,3 +1,28 @@
+import os
+import sys
+
+from natasha import NewsEmbedding, NewsMorphTagger, Segmenter, NewsSyntaxParser, NewsNERTagger
+
+if getattr(sys, 'frozen', False):
+    NEWS_EMBEDDING = os.path.join(sys._MEIPASS, "navec_news_v1_1B_250K_300d_100q.tar")
+    NEWS_MORPH = os.path.join(sys._MEIPASS, "slovnet_morph_news_v1.tar")
+    NEWS_SYNTAX = os.path.join(sys._MEIPASS, "slovnet_syntax_news_v1.tar")
+    NEWS_NER = os.path.join(sys._MEIPASS, "slovnet_ner_news_v1.tar")
+    DICTS = os.path.join(sys._MEIPASS, "dicts")
+else:
+    NEWS_EMBEDDING = os.path.join("navec_news_v1_1B_250K_300d_100q.tar")
+    NEWS_MORPH = os.path.join("slovnet_morph_news_v1.tar")
+    NEWS_SYNTAX = os.path.join("slovnet_syntax_news_v1.tar")
+    NEWS_NER = os.path.join("slovnet_ner_news_v1.tar")
+    DICTS = "dicts"
+
+emb = NewsEmbedding(path=NEWS_EMBEDDING)
+morph_tagger = NewsMorphTagger(emb, path=NEWS_MORPH)
+segmenter = Segmenter()
+syntax_parser = NewsSyntaxParser(emb, path=NEWS_SYNTAX)
+ner_tagger = NewsNERTagger(emb, path=NEWS_NER)
+NARRATOR = -1
+
 DETPRON = {
     "Fem": {
         '3': ["ее", "её"],

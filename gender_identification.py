@@ -1,13 +1,8 @@
-from natasha import Doc, NewsEmbedding, NewsMorphTagger, Segmenter, NewsSyntaxParser, NewsNERTagger
+from natasha import Doc
 from statistics import mode
 
 from const import FEM_TEXT1
-
-emb = NewsEmbedding()
-morph_tagger = NewsMorphTagger(emb)
-segmenter = Segmenter()
-syntax_parser = NewsSyntaxParser(emb)
-ner_tagger = NewsNERTagger(emb)
+from const import segmenter, morph_tagger, ner_tagger, syntax_parser
 
 
 def identify_gender(doc, name=None):

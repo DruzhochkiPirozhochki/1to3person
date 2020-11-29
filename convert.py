@@ -1,5 +1,7 @@
 import pymorphy2
 
+from const import DICTS
+
 case_mapping = {
     "Nom": "nomn",
     "Gen": "gent",
@@ -9,7 +11,7 @@ case_mapping = {
     "Loc": "loct"
 }
 
-morph = pymorphy2.MorphAnalyzer()
+morph = pymorphy2.MorphAnalyzer(path=DICTS)
 
 
 def change_case(word, new_case):

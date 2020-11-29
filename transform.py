@@ -1,28 +1,14 @@
-from natasha import (
-    Segmenter,
-    MorphVocab,
-    NewsEmbedding,
-    NewsMorphTagger,
-    NewsSyntaxParser,
-    NewsNERTagger,
+from copy import copy, deepcopy
+from itertools import accumulate
+from types import SimpleNamespace
 
-    PER,
-    NamesExtractor,
+from natasha import (
     Doc
 )
 
-from copy import copy, deepcopy
-from types import SimpleNamespace
-from const import DETPRON, SELFDETERMINERS, MYDETERMINERS, QUOTES
+from const import DETPRON, SELFDETERMINERS, MYDETERMINERS, QUOTES, segmenter, morph_tagger, syntax_parser, ner_tagger
 from convert import make_replacement, change_case, name_to_case
 from gender_identification import identify_gender
-
-emb = NewsEmbedding()
-morph_tagger = NewsMorphTagger(emb)
-segmenter = Segmenter()
-syntax_parser = NewsSyntaxParser(emb)
-ner_tagger = NewsNERTagger(emb)
-NARRATOR = -1
 
 
 def transform_word(word, gender, case, num):
