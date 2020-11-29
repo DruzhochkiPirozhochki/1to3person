@@ -166,8 +166,6 @@ def name_to_case(name, gender=None, case='Gen'):
         gender = 'masc'
     tokens = name.split(' ')
 
-    morph = pymorphy2.MorphAnalyzer()
-
     for token in tokens:
         p = morph.parse(token)
         i = 0
@@ -178,19 +176,23 @@ def name_to_case(name, gender=None, case='Gen'):
             else:
                 break
         p = p[i]
+        print(p.inflect({case}))
         if p.inflect({case}) is not None:
             t_name += p.inflect({case}).word + ' '  # todo: wtf
 
-    new_name = t_name.capitalize()
-    for i in range(len(t_name)):
-        if t_name[i] == ' ' or t_name[i] == '-':
-            if i < len(t_name) - 1:
-                new_name += t_name[i + 1].upper()
-        else:
-            if i < len(t_name) - 1:
-                new_name += t_name[i + 1]
+    if t_name != '':
+        new_name = t_name.capitalize()[0]
+        for i in range(len(t_name)):
+            if t_name[i] == ' ' or t_name[i] == '-':
+                if i < len(t_name) - 1:
+                    new_name += t_name[i + 1].upper()
+            else:
+                if i < len(t_name) - 1:
+                    new_name += t_name[i + 1]
 
-    return new_name
+        return new_name
+    else:
+        return name
 
 
 if __name__ == '__main__':
