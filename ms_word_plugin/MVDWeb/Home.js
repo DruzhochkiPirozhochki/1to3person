@@ -224,7 +224,7 @@
         var range = context.document.body.insertText(word, Word.InsertLocation.end).getRange();
 
         if (!equal) {
-            range.font.color = 'red';
+            range.font.color = 'blue';
         } else {
             range.font.color = 'black';
         }
