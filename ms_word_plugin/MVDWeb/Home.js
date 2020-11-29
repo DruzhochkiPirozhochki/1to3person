@@ -39,7 +39,7 @@
                 var fullName = parseFullName(text);
 
                 // Get highlighted text
-                getHighlightedText(fullName, text);                
+                getHighlightedText(fullName, text, context);                
             });
         })
             .catch(function (error) {
@@ -100,7 +100,7 @@
 
 
     // Get highlighted text
-    function getHighlightedText(fullName, text) {
+    function getHighlightedText(fullName, text, context) {
         Office.onReady(function () {
             $(document).ready(function () {
                 Office.context.document.getSelectedDataAsync(Office.CoercionType.Text, function (asyncResult) {
@@ -129,9 +129,10 @@
                         // Transform message and replace it with the result from server
                         transformText(fullName, message).then(res => {
                             Debug.writeln("\nTRANSFORMED TEXT");
-                            Debug.writeln(res);
+                            Debug.writeln(res[0]);
 
-                            replaceText(res);
+                            replaceText('', message, res[0], res[1], context);
+                            //setTimeout(() => void 0, 2000);
                         });
                     }
                 });
@@ -169,7 +170,7 @@
             Debug.writeln('\nRESULT');
             Debug.writeln(result);
 
-            return result['text'];
+            return [result['text'], result['colored']];
 
         } catch (e) {
             Debug.writeln('\nERROR');
@@ -178,15 +179,63 @@
     }
 
     // Set a highlighted text to the string
-    function replaceText(transformedText) {
+    function replaceText(transformedText, message, res, colors, context) {
         Office.onReady(function () {
             $(document).ready(function () {
                 Office.context.document.setSelectedDataAsync(transformedText, function (asyncResult) {
                     if (asyncResult.status == Office.AsyncResultStatus.Failed) {
                         Debug.writeln('Action failed. Error: ' + asyncResult.error.message);
+                    } else {
+                        // Compare two documents
+                        var oldText = message;
+                        var newText = res;
+
+                        var len = colors.length;
+                        var index = 0;
+
+                        for (var j = 0; j < len; j++) {
+                            var start = colors[j][0];
+                            var end = colors[j][1];
+                            Debug.writeln(index + '::::' + start + '::::' + end);
+                            Debug.writeln(newText.slice(index, start));
+                            Debug.writeln(newText.slice(start, end));
+
+                            if (index <= start) {
+                                insertInTheEnd(context, newText.slice(index, start), true);
+                                insertInTheEnd(context, newText.slice(start, end), false);
+                                index = end;
+                            }
+                        }
+
+                        if (index < newText.length) {
+                            insertInTheEnd(context, newText.slice(index, newText.length), true);
+                        }
+
+                        context.sync().then(function () {
+                            Debug.writeln('DONE');
+                        });
                     }
                 });
             });
+        });
+    }
+
+    function insertInTheEnd(context, word, equal) {
+        var range = context.document.body.insertText(word, Word.InsertLocation.end).getRange();
+
+        if (!equal) {
+            range.font.color = 'blue';
+        } else {
+            range.font.color = 'black';
+        }
+
+        range.load("text");
+
+        return context.sync().then(function () {
+            if (word !== ' ') {
+                Debug.writeln(word);
+                Debug.writeln(equal === true ? 'black' : 'blue');
+            }
         });
     }
 
