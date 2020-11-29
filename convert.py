@@ -170,8 +170,12 @@ def name_to_case(name, gender=None, case='Gen'):
     for token in tokens:
         p = morph.parse(token)
         i = 0
+        max_idx = len(p) - 1
         while not gender in p[i].tag:
-            i += 1
+            if i != max_idx:
+                i += 1
+            else:
+                break
         p = p[i]
         t_name += p.inflect({case}).word + ' '
 
